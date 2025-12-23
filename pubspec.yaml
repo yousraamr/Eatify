@@ -1,0 +1,41 @@
+name: eatify
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+ # UI
+  cupertino_icons: ^1.0.6
+  cached_network_image: ^3.3.1
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+
+  # Supabase
+  supabase_flutter: ^2.5.6
+
+  # Location & Maps
+  geolocator: ^13.0.1
+  google_maps_flutter: ^2.9.0
+
+  # Utilities
+  uuid: ^4.4.0
+  intl: ^0.19.0
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  http: ^1.2.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/img/

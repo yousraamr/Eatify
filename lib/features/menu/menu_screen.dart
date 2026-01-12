@@ -1,4 +1,5 @@
 import 'package:eatify/features/cart/personal_cart_screen.dart';
+import 'package:eatify/features/menu/product_screen.dart';
 import 'package:eatify/features/shared_cart/shared_cart_screen.dart';
 import 'package:eatify/providers/shared_cart_provider.dart';
 import 'package:flutter/material.dart';
@@ -89,117 +90,129 @@ class _MenuItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        // ✅ Navigate to ProductScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProductScreen(item: item),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          /// IMAGE (PLACEHOLDER STYLE LIKE GITHUB)
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(16),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6,
+              offset: Offset(0, 3),
             ),
-            child: Container(
-              width: 110,
-              height: 110,
-              color: Colors.grey.shade200,
-              child: const Icon(
-                Icons.fastfood,
-                size: 40,
-                color: Colors.grey,
+          ],
+        ),
+        child: Row(
+          children: [
+            // IMAGE
+            ClipRRect(
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+              child: SizedBox(
+                width: 110,
+                height: 110,
+                child: item.imageUrl.isNotEmpty
+                    ? Image.network(
+                        item.imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (_, __, ___) => _imageFallback(),
+                      )
+                    : _imageFallback(),
               ),
             ),
-          ),
 
-          /// DETAILS
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            // DETAILS
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${item.price} EGP',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          Theme.of(context).primaryColor,
+                    const SizedBox(height: 6),
+                    Text(
+                      '${item.price} EGP',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          /// ADD BUTTON
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                try {
-                  ref
-                      .read(cartProvider.notifier)
-                      .addItem(item);
-
-                  ScaffoldMessenger.of(context)
-                      .clearSnackBars();
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content: Text('Added to cart'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                } catch (_) {
-                  _showClearCartDialog(
-                      context, ref, item);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).primaryColor,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+
+            // ADD BUTTON
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {
+                  try {
+                    ref.read(cartProvider.notifier).addItem(item);
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Added to cart'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  } catch (_) {
+                    _showClearCartDialog(context, ref, item);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showClearCartDialog(
-    BuildContext context,
-    WidgetRef ref,
-    MenuItem item,
-  ) {
+  Widget _imageFallback() {
+    return Container(
+      color: Colors.grey.shade200,
+      child: const Icon(Icons.fastfood, size: 40, color: Colors.grey),
+    );
+  }
+
+  void _showClearCartDialog(BuildContext context, WidgetRef ref, MenuItem item) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -209,16 +222,16 @@ class _MenuItemCard extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            child: const Text('Cancel'),
             onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
           TextButton(
-            child: const Text('Clear & Add'),
             onPressed: () {
               ref.read(cartProvider.notifier).clearCart();
               ref.read(cartProvider.notifier).addItem(item);
               Navigator.pop(context);
             },
+            child: const Text('Clear & Add'),
           ),
         ],
       ),

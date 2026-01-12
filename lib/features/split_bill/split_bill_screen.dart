@@ -19,10 +19,7 @@ class SplitBillScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text('Split Bill'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Split Bill'), elevation: 0),
       body: splitBill.contributions.isEmpty
           ? _buildEmptyState()
           : _buildBillContent(context, splitBill),
@@ -71,9 +68,9 @@ class SplitBillScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Individual Breakdown',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 ...splitBill.contributions.map(
@@ -107,11 +104,7 @@ class SplitBillScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          const Icon(
-            Icons.receipt_long,
-            size: 48,
-            color: Colors.white,
-          ),
+          const Icon(Icons.receipt_long, size: 48, color: Colors.white),
           const SizedBox(height: 12),
           Text(
             restaurantName,
@@ -336,10 +329,7 @@ class SplitBillScreen extends ConsumerWidget {
                       ),
                       Text(
                         '${contribution.itemCount} item${contribution.itemCount > 1 ? 's' : ''}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -406,7 +396,10 @@ class SplitBillScreen extends ConsumerWidget {
                 const Divider(height: 24),
 
                 // Breakdown
-                _buildContributionRow('Subtotal', contribution.formattedSubtotal),
+                _buildContributionRow(
+                  'Subtotal',
+                  contribution.formattedSubtotal,
+                ),
                 if (contribution.deliveryFee > 0) ...[
                   const SizedBox(height: 4),
                   _buildContributionRow(
@@ -423,10 +416,7 @@ class SplitBillScreen extends ConsumerWidget {
                 ],
                 if (contribution.tax > 0) ...[
                   const SizedBox(height: 4),
-                  _buildContributionRow(
-                    'Tax Share',
-                    contribution.formattedTax,
-                  ),
+                  _buildContributionRow('Tax Share', contribution.formattedTax),
                 ],
 
                 const SizedBox(height: 8),
@@ -469,19 +459,10 @@ class SplitBillScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
         ),
       ],
     );

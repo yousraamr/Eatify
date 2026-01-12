@@ -1,3 +1,4 @@
+import 'package:eatify/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/address_provider.dart';
@@ -14,7 +15,7 @@ class AddressSelectionScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delivery Address'),
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: AppTheme.primary,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -53,7 +54,7 @@ class AddressSelectionScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
+                          backgroundColor: AppTheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -66,8 +67,9 @@ class AddressSelectionScreen extends ConsumerWidget {
                         onPressed: () {
                           if (addressCtrl.text.isEmpty) return;
 
-                          ref.read(selectedAddressProvider.notifier).state =
-                              Address(
+                          ref
+                              .read(selectedAddressProvider.notifier)
+                              .state = Address(
                             label: addressCtrl.text,
                             latitude: 30.0444,
                             longitude: 31.2357,
@@ -109,7 +111,7 @@ class AddressSelectionScreen extends ConsumerWidget {
                           style: TextStyle(fontSize: 16),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrangeAccent,
+                          backgroundColor: AppTheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -120,8 +122,9 @@ class AddressSelectionScreen extends ConsumerWidget {
                             final position =
                                 await LocationService.getCurrentLocation();
 
-                            ref.read(selectedAddressProvider.notifier).state =
-                                Address(
+                            ref
+                                .read(selectedAddressProvider.notifier)
+                                .state = Address(
                               label: 'Current Location',
                               latitude: position.latitude,
                               longitude: position.longitude,

@@ -15,10 +15,11 @@ class RegisterScreen extends ConsumerStatefulWidget {
 }
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  final TextEditingController txtName = TextEditingController();
-  final TextEditingController txtEmail = TextEditingController();
-  final TextEditingController txtPassword = TextEditingController();
-  final TextEditingController txtConfirmPassword = TextEditingController();
+  final txtName = TextEditingController();
+  final txtUsername = TextEditingController();
+  final txtEmail = TextEditingController();
+  final txtPassword = TextEditingController();
+  final txtConfirmPassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,36 +39,43 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  "Add your info to sign up",
-                  style: TextStyle(fontSize: 14),
-                ),
+                const Text("Create your account", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 25),
+
                 RoundTextfield(hintText: "Full Name", controller: txtName),
-                const SizedBox(height: 25),
+                const SizedBox(height: 18),
+
+                RoundTextfield(hintText: "Username", controller: txtUsername),
+                const SizedBox(height: 18),
+
                 RoundTextfield(
                   hintText: "Email",
                   controller: txtEmail,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 18),
+
                 RoundTextfield(
                   hintText: "Password",
                   controller: txtPassword,
                   obscureText: true,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 18),
+
                 RoundTextfield(
                   hintText: "Confirm Password",
                   controller: txtConfirmPassword,
                   obscureText: true,
                 ),
                 const SizedBox(height: 25),
+
                 RoundButton(
-                  title: isLoading ? "Loading..." : "Sign Up",
+                  title: isLoading ? "Creating account..." : "Sign Up",
                   onPressed: isLoading ? null : _handleSignUp,
                 ),
+
                 const SizedBox(height: 30),
+
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -75,14 +83,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
-                  child: const Text(
-                    "Already have an account? Login",
-                    style: TextStyle(fontSize: 14),
-                  ),
+                  child: const Text("Already have an account? Login"),
                 ),
               ],
             ),
           ),
+
           if (isLoading)
             Container(
               color: Colors.black38,
@@ -93,43 +99,52 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  void _handleSignUp() async {
-    final authController = ref.read(authControllerProvider);
+  Future<void> _handleSignUp() async {
+    final auth = ref.read(authControllerProvider);
+
     final name = txtName.text.trim();
+    final username = txtUsername.text.trim();
     final email = txtEmail.text.trim();
     final password = txtPassword.text;
     final confirmPassword = txtConfirmPassword.text;
 
-    // Validation
-    if (name.isEmpty) return _showAlert("Please enter your name");
+    if (name.isEmpty) return _showAlert("Enter full name");
+    if (username.length < 3) return _showAlert("Username too short");
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
+      return _showAlert("Username can only contain letters, numbers and _");
+    }
     if (!email.contains("@")) return _showAlert("Enter a valid email");
-    if (password.length < 6) return _showAlert("Password must be at least 6 characters");
+    if (password.length < 6) return _showAlert("Password too short");
     if (password != confirmPassword) return _showAlert("Passwords do not match");
 
     ref.read(loadingProvider.notifier).state = true;
 
     try {
-      await authController.signUp(
+      await auth.signUp(
         email: email,
         password: password,
         fullName: name,
+        username: username,
       );
 
       ref.read(loadingProvider.notifier).state = false;
 
       if (!mounted) return;
-      _showAlert(
-        "Account created successfully! Please login.",
-        onOk: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginScreen()),
-          );
-        },
-      );
+
+      _showAlert("Account created! Please login.", onOk: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      });
     } catch (e) {
       ref.read(loadingProvider.notifier).state = false;
-      _showAlert("Signup failed: ${e.toString()}");
+
+      if (e.toString().contains('duplicate')) {
+        _showAlert("Username already taken");
+      } else {
+        _showAlert("Signup failed: $e");
+      }
     }
   }
 

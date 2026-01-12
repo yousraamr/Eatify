@@ -1,0 +1,41 @@
+{
+  "profile": "الملف الشخصي",
+  "errorLoadingProfile": "حدث خطأ أثناء تحميل الملف الشخصي",
+  "retry": "إعادة المحاولة",
+  "restaurant":"المطاعم",
+
+  "id": "المعرف",
+  "editProfile": "تعديل الملف الشخصي",
+  "logout": "تسجيل الخروج",
+  "logoutConfirmationTitle": "تسجيل الخروج",
+  "logoutConfirmationMessage": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "cancel": "إلغاء",
+
+  "darkMode": "الوضع الداكن",
+  "language": "اللغة",
+
+  "liveOrders": "الطلبات الحالية",
+  "orderHistory": "سجل الطلبات",
+  "sharedCart": "السلة المشتركة",
+  "favorites": "المفضلة",
+  "blockedUsers": "المستخدمون المحظورون",
+
+  "loadingRestaurants": "جاري تحميل المطاعم...",
+  "error": "خطأ",
+  "noFavoritesYet": "لا توجد مفضلات حتى الآن!",
+  "noLiveOrdersYet": "لا توجد طلبات حالية حتى الآن!",
+  "deliveryLocationNotAvailable": "موقع التوصيل غير متاح",
+  "orderNumber": "رقم الطلب",
+  "trackOrderMsg": "ستظهر عمليات التوصيل النشطة هنا بمجرد تقديم طلب.",
+  "completeOrdMsg": "يمكنك عرض طلباتك المكتملة هنا.",
+  "noPreviousOrders": "لا توجد طلبات سابقة!",
+  "deliveredOrders": "تم التوصيل",
+  "noBlockedUsers": "لا يوجد مستخدمون محظورون حتى الآن!",
+  "unblock": "إلغاء الحظر",
+  "joinSharedCart" : "انضم إلى سلة مشتركة",
+  "joincart" : "انضم إلى السلة",
+  "cartCode" : "أدخل رمز السلة",
+  "instructionsMsg":"قم بإنشاء سلة مشتركة من قائمة مطعم",
+  "enterCartCode" : "أدخل رمز السلة"
+
+}

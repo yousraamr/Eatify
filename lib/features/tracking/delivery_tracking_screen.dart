@@ -98,7 +98,15 @@ class _DeliveryTrackingScreenState
         ref.watch(deliveryTrackingProvider(widget.orderId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Live Delivery')),
+      appBar: AppBar(
+            title: const Text('Live Delivery'),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+          ),
       body: Column(
         children: [
           /// ETA BAR

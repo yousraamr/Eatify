@@ -1,3 +1,4 @@
+import 'package:eatify/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 
@@ -43,7 +44,7 @@ class RoundIconButton extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                  color: Colors.white,
+                  color: AppTheme.card,
                   fontSize: fontSize,
                   fontWeight: fontWeight),
             ),

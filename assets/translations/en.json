@@ -1,0 +1,40 @@
+{
+  "profile": "Profile",
+  "errorLoadingProfile": "Error loading profile",
+  "retry": "Retry",
+  "restaurant": "Restaurant",
+  "id": "ID",
+  "editProfile": "Edit Profile",
+  "logout": "Logout",
+  "logoutConfirmationTitle": "Logout",
+  "logoutConfirmationMessage": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+
+  "darkMode": "Dark Mode",
+  "language": "Language",
+
+  "liveOrders": "Live Orders",
+  "orderHistory": "Order History",
+  "sharedCart": "Shared Cart",
+  "favorites": "Favorites",
+  "blockedUsers": "Blocked Users",
+
+  "loadingRestaurants": "Loading restaurants...",
+  "error": "Error",
+  "noFavoritesYet": "No favorites yet!",
+  "noLiveOrdersYet": "No live orders yet!",
+  "deliveryLocationNotAvailable": "Delivery location not available",
+  "orderNumber": "Order Number",
+  "trackOrderMsg": "Your active deliveries will appear here once you place an order.",
+  "completeOrdMsg": "You can view your completed orders here.",
+  "noPreviousOrders": "No previous orders!",
+  "deliveredOrders": "DELIEVERED",
+  "noBlockedUsers": "No blocked users yet!",
+  "unblock": "Unblock",
+  "joinSharedCart" : "Join a Shared Cart",
+  "joincart" : "Join Cart",
+  "cartCode" : "Enter Cart Code",
+  "instructionsMsg":"Create a shared cart from a restaurant menu",
+  "enterCartCode" : "Enter Cart Code"
+
+}

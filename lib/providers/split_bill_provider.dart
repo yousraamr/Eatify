@@ -13,7 +13,7 @@ final splitBillProvider = Provider.family<SplitBillResult, String>(
     return itemsAsync.when(
       data: (items) {
         // DELIVERY FEE: Split equally among all participants
-        const deliveryFee = 30.0; // EGP (you can make this dynamic later)
+        const deliveryFee = 30.0; 
         
         // SERVICE FEE: 10% of subtotal
         double subtotal = 0.0;

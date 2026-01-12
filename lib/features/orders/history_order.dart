@@ -1,19 +1,24 @@
 import 'package:eatify/providers/profile_orders_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:easy_localization/easy_localization.dart';
+import 'package:eatify/translations/ordhis_strings.dart';
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final history = ref.watch(orderHistoryProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-        title: const Text('Order History'),
+        title: const Text(OrdhisStrings.orderHistory).tr(),
         centerTitle: true,
+        backgroundColor: theme.primaryColor,
+        foregroundColor:
+            theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary,
       ),
       body: history.when(
         data: (orders) {
@@ -29,7 +34,7 @@ class OrderHistoryScreen extends ConsumerWidget {
               final order = orders[i];
 
               return Material(
-                color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16),
                 elevation: 3,
                 shadowColor: Colors.black12,
@@ -38,19 +43,14 @@ class OrderHistoryScreen extends ConsumerWidget {
                     horizontal: 16,
                     vertical: 12,
                   ),
-                  leading: const Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                  ),
+                  leading: const Icon(Icons.check_circle, color: Colors.green),
                   title: Text(
-                    'Order #${order['id'].toString().substring(0, 6)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    '${OrdhisStrings.orderNumber.tr()} #${order['id'].toString().substring(0, 6)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: const Text(
-                    'DELIVERED',
-                    style: TextStyle(
+                  subtitle: Text(
+                    OrdhisStrings.deliveredOrders.tr(),
+                    style: const TextStyle(
                       color: Colors.green,
                       fontWeight: FontWeight.w600,
                     ),
@@ -60,8 +60,7 @@ class OrderHistoryScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(e.toString())),
       ),
     );
@@ -80,23 +79,20 @@ class _EmptyHistoryView extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.history,
-            size: 70,
-            color: Colors.grey,
-          ),
+        children:  [
+          Icon(Icons.history, size: 70, color: Colors.grey),
           SizedBox(height: 16),
           Text(
-            'No Previous Orders',
+            OrdhisStrings.noPreviousOrders.tr(),
             style: TextStyle(
+              color: Colors.grey,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 6),
           Text(
-            'Your completed orders will appear here.',
+            OrdhisStrings.completeOrdMsg.tr(),
             style: TextStyle(color: Colors.grey),
           ),
         ],

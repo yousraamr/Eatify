@@ -1,3 +1,4 @@
+import 'package:eatify/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/menu_provider.dart';
@@ -40,7 +41,13 @@ class SharedMenuScreen extends ConsumerWidget {
 
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Added to shared cart')),
+                            const SnackBar(
+                              backgroundColor: AppTheme.confirmation,
+                              content: Text(
+                                'Added to shared cart',
+                                style: TextStyle(color: AppTheme.card),
+                              ),
+                            ),
                           );
                         }
                       },

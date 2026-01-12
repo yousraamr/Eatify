@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/shared_cart_item_model.dart';
 import '../services/supabase_service.dart';
 
@@ -12,9 +13,10 @@ final sharedCartItemsProvider =
 class SharedCartItemsNotifier
     extends StateNotifier<AsyncValue<List<SharedCartItem>>> {
   final String cartId;
-
+  RealtimeChannel? _itemsChannel;
   SharedCartItemsNotifier(this.cartId) : super(const AsyncLoading()) {
-    _loadItems();
+      _loadItems();
+     _listenToItems();
   }
 
   Future<void> _loadItems() async {
@@ -57,8 +59,9 @@ class SharedCartItemsNotifier
         quantity: e['quantity'],
       );
     }).toList();
-
+    
     state = AsyncData(items);
+    
   } catch (e, st) {
     print('Error loading cart items: $e');
     state = AsyncError(e, st);
@@ -91,5 +94,62 @@ class SharedCartItemsNotifier
         .delete()
         .eq('id', cartItemId);
     await _loadItems();
+  }
+
+  void _listenToItems() {
+  _itemsChannel?.unsubscribe();
+
+  _itemsChannel =
+      SupabaseService.client.channel('shared-cart-items-$cartId');
+
+  // ✅ INSERT + UPDATE (can safely use filter)
+  _itemsChannel!
+      .onPostgresChanges(
+        event: PostgresChangeEvent.insert,
+        schema: 'public',
+        table: 'shared_cart_items',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'cart_id',
+          value: cartId,
+        ),
+        callback: (_) => _loadItems(),
+      )
+      .onPostgresChanges(
+        event: PostgresChangeEvent.update,
+        schema: 'public',
+        table: 'shared_cart_items',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'cart_id',
+          value: cartId,
+        ),
+        callback: (_) => _loadItems(),
+      )
+
+      // ✅ DELETE (NO FILTER — check manually)
+      .onPostgresChanges(
+        event: PostgresChangeEvent.delete,
+        schema: 'public',
+        table: 'shared_cart_items',
+        callback: (payload) {
+          final old = payload.oldRecord;
+          if (old == null) return;
+
+          if (old['cart_id'] == cartId) {
+            _loadItems();
+          }
+        },
+      )
+      .subscribe();
+}
+
+
+
+
+  @override
+  void dispose() {
+    _itemsChannel?.unsubscribe();
+    super.dispose();
   }
 }

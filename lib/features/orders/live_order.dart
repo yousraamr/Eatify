@@ -3,19 +3,24 @@ import 'package:eatify/providers/profile_orders_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-
+import 'package:easy_localization/easy_localization.dart';
+import 'package:eatify/translations/liveord_strings.dart';
 class LiveOrdersScreen extends ConsumerWidget {
   const LiveOrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final liveOrders = ref.watch(liveOrdersProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
-        title: const Text('Live Orders'),
+        title: const Text(LiveordStrings.liveOrders).tr(),
         centerTitle: true,
+        backgroundColor: theme.primaryColor,
+        foregroundColor:
+            theme.appBarTheme.foregroundColor ?? theme.colorScheme.onPrimary,
         elevation: 0,
       ),
       body: liveOrders.when(
@@ -33,10 +38,8 @@ class LiveOrdersScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
-        error: (e, _) =>
-            Center(child: Text(e.toString())),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text(e.toString())),
       ),
     );
   }
@@ -63,9 +66,7 @@ class _LiveOrderCard extends StatelessWidget {
 
         if (rLat == null || rLng == null || aLat == null || aLng == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Delivery location not available'),
-            ),
+            SnackBar(content: Text(LiveordStrings.deliveryLocationNotAvailable).tr()),
           );
           return;
         }
@@ -84,7 +85,7 @@ class _LiveOrderCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(18),
           boxShadow: const [
             BoxShadow(
@@ -101,8 +102,7 @@ class _LiveOrderCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color:
-                    Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -120,7 +120,7 @@ class _LiveOrderCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order #${order['id'].toString().substring(0, 6)}',
+                    '${LiveordStrings.orderNumber.tr()} #${order['id'].toString().substring(0, 6)}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -135,8 +135,7 @@ class _LiveOrderCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color:
-                          Theme.of(context).primaryColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                 ],
@@ -144,10 +143,10 @@ class _LiveOrderCard extends StatelessWidget {
             ),
 
             /// Arrow
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: Colors.grey,
+              color: Theme.of(context).primaryColor,
             ),
           ],
         ),
@@ -170,27 +169,24 @@ class _EmptyLiveOrdersView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(
               Icons.receipt_long,
               size: 70,
-              color: Colors.grey,
+              color: Theme.of(context).primaryColor,
             ),
             SizedBox(height: 20),
             Text(
-              'No Live Orders',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              LiveordStrings.noLiveOrdersYet.tr(),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              'Your active deliveries will appear here once you place an order.',
+              LiveordStrings.trackOrderMsg.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
+                color: Theme.of(context).cardColor,
               ),
             ),
           ],

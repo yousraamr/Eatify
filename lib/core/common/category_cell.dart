@@ -1,10 +1,10 @@
+import 'package:eatify/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-
 
 class CategoryCell extends StatelessWidget {
   final Map cObj;
   final VoidCallback onTap;
-  const CategoryCell({super.key, required this.cObj, required this.onTap });
+  const CategoryCell({super.key, required this.cObj, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,23 +16,22 @@ class CategoryCell extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
+              child: Image.network(
                 cObj["image"].toString(),
-                width: 85,
-                height: 85,
+                width: 200,
+                height: 150,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(
-              height: 8,
-            ),
+            const SizedBox(height: 8),
             Text(
               cObj["name"],
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700),
+                color: AppTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),

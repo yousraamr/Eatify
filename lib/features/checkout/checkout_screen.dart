@@ -1,12 +1,13 @@
+import 'package:eatify/providers/shared_cart_items_provider.dart';
+import 'package:eatify/providers/shared_cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../providers/order_provider.dart';
 import '../../providers/cart_provider.dart';
-import '../../providers/shared_cart_provider.dart';
-import '../../providers/restaurant_provider.dart';
+import '../../providers/order_provider.dart';
 import '../../providers/address_provider.dart';
+import '../../providers/restaurant_provider.dart';
 import '../tracking/delivery_tracking_screen.dart';
 
 class CheckoutScreen extends ConsumerWidget {
@@ -26,91 +27,113 @@ class CheckoutScreen extends ConsumerWidget {
           children: [
             DropdownButtonFormField<String>(
               value: paymentMethod,
-              decoration: const InputDecoration(labelText: 'Payment Method'),
+              decoration:
+                  const InputDecoration(labelText: 'Payment Method'),
               items: const [
                 DropdownMenuItem(value: 'Cash', child: Text('Cash')),
                 DropdownMenuItem(value: 'Card', child: Text('Card')),
               ],
               onChanged: (v) => paymentMethod = v!,
             ),
-
             const SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 child: const Text('Confirm Order'),
                 onPressed: () async {
                   try {
-                    // 1️⃣ Ensure address exists
-                    final address = ref.read(selectedAddressProvider);
+                    final address =
+                        ref.read(selectedAddressProvider);
                     if (address == null) {
-                      throw Exception('Please select address first');
+                      throw Exception('Select address first');
+                    }
+                    // final restaurantId =  ref.read(sharedCartProvider).value!.restaurantId;  
+
+                    if(!isShared){
+                    final cart = ref.read(cartProvider);
+                    if (cart.isEmpty) {
+                      throw Exception('Cart is empty');
                     }
 
-                    // 2️⃣ Determine restaurant ID
-                    final restaurantId = isShared
-                        ? ref.read(sharedCartProvider).value!.restaurantId
-                        : ref.read(cartProvider).restaurantId;
+                    String? firstOrderId;
+                    LatLng? firstRestaurantLatLng;
 
-                    if (restaurantId == null) {
-                      throw Exception('Restaurant not found in cart');
+                    for (final entry
+                        in cart.itemsByRestaurant.entries) {
+                      final restaurantId = entry.key;
+                      final items = entry.value;
+
+                      final restaurant =
+                          await fetchRestaurantById(restaurantId);
+
+                      final orderId = await ref
+                          .read(orderProvider)
+                          .checkoutPersonalCart(
+                            restaurantId: restaurantId,
+                            items: items,
+                            paymentMethod: paymentMethod,
+                          );
+
+                      firstOrderId ??= orderId;
+                      firstRestaurantLatLng ??= LatLng(
+                        restaurant.latitude!,
+                        restaurant.longitude!,
+                      );
                     }
-                    
-                    final restaurants = await ref.read(
-                      restaurantProvider.future,
-                    );
 
-                    // 4️⃣ Find the restaurant for this order
-                    /*final restaurant = restaurants.firstWhere(
-                        (r) => r.id == restaurantId,
-                        orElse: () => throw Exception('Restaurant not found'),
-                      );*/
-                    final restaurant = await fetchRestaurantById(restaurantId!);
-
-                    // 5️⃣ Create LatLng safely
-                    final restaurantLatLng = LatLng(
-                      restaurant.latitude!,
-                      restaurant.longitude!,
-                    );
-
-                    final destinationLatLng = LatLng(
-                      address.latitude,
-                      address.longitude,
-                    );
-
-                    // 4️⃣ Place order
-                    final orderId = isShared
-                        ? await ref
-                              .read(orderProvider)
-                              .checkoutSharedCart(paymentMethod: paymentMethod)
-                        : await ref
-                              .read(orderProvider)
-                              .checkoutPersonalCart(
-                                paymentMethod: paymentMethod,
-                              );
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Order placed successfully'),
-                      ),
-                    );
-
-                    // 5️⃣ Navigate to tracking with REAL coordinates
+                    ref.read(cartProvider.notifier).clearCart();
+                          
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (_) => DeliveryTrackingScreen(
-                          orderId: orderId,
-                          restaurant: restaurantLatLng,
-                          destination: destinationLatLng,
+                          orderId: firstOrderId!,
+                          restaurant: firstRestaurantLatLng!,
+                          destination: LatLng(
+                            address.latitude,
+                            address.longitude,
+                          ),
                         ),
                       ),
                     );
+                    } else {
+                      final sharedCart =
+                          ref.read(sharedCartProvider).value;
+                      if (sharedCart == null) {
+                        throw Exception('No active shared cart');
+                      }
+
+                      final orderId = await ref
+                          .read(orderProvider)
+                          .checkoutSharedCart(
+                            paymentMethod: paymentMethod,
+                          );
+
+                      final restaurant =
+                          await fetchRestaurantById(
+                              sharedCart.restaurantId);
+
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DeliveryTrackingScreen(
+                            orderId: orderId,
+                            restaurant: LatLng(
+                              restaurant.latitude!,
+                              restaurant.longitude!,
+                            ),
+                            destination: LatLng(
+                              address.latitude,
+                              address.longitude,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                   } catch (e) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
+                    );
                   }
                 },
               ),

@@ -5,31 +5,23 @@ import '../utils/split_bill_calculator.dart';
 
 class InlineSplitBillWidget extends ConsumerWidget {
   final String cartId;
-
-  const InlineSplitBillWidget({
-    super.key,
-    required this.cartId,
-  });
+  const InlineSplitBillWidget({super.key, required this.cartId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final splitBill = ref.watch(splitBillProvider(cartId));
 
-    if (splitBill.contributions.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (splitBill.contributions.isEmpty) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
 
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor, // adapts to light/dark mode
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
         ],
       ),
       child: Column(
@@ -40,30 +32,25 @@ class InlineSplitBillWidget extends ConsumerWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withOpacity(0.8),
+                  theme.primaryColor.withOpacity(0.7),
+                  theme.primaryColor,
                 ],
               ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
               ),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.receipt_long,
-                  color: Colors.white,
-                  size: 24,
-                ),
+                Icon(Icons.receipt_long, color: theme.cardColor, size: 24),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Split Bill Summary',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: theme.cardColor,
                     ),
                   ),
                 ),
@@ -73,21 +60,17 @@ class InlineSplitBillWidget extends ConsumerWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: theme.cardColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.people,
-                        size: 16,
-                        color: Colors.white,
-                      ),
+                      Icon(Icons.people, size: 16, color: theme.cardColor),
                       const SizedBox(width: 4),
                       Text(
                         '${splitBill.participantCount}',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: theme.cardColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -102,19 +85,18 @@ class InlineSplitBillWidget extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[200]!),
-              ),
+              color: theme.cardColor.withOpacity(0.4),
+              border: Border(bottom: BorderSide(color: theme.dividerColor)),
             ),
             child: Column(
               children: [
-                _buildRow('Subtotal', splitBill.formattedTotalSubtotal),
+                _buildRow('Subtotal', splitBill.formattedTotalSubtotal, theme),
                 if (splitBill.totalDeliveryFee > 0) ...[
                   const SizedBox(height: 8),
                   _buildRow(
                     'Delivery Fee',
                     splitBill.formattedTotalDeliveryFee,
+                    theme,
                   ),
                 ],
                 if (splitBill.totalServiceFee > 0) ...[
@@ -122,23 +104,25 @@ class InlineSplitBillWidget extends ConsumerWidget {
                   _buildRow(
                     'Service Fee',
                     splitBill.formattedTotalServiceFee,
+                    theme,
                   ),
                 ],
                 if (splitBill.totalTax > 0) ...[
                   const SizedBox(height: 8),
-                  _buildRow('Tax', splitBill.formattedTotalTax),
+                  _buildRow('Tax', splitBill.formattedTotalTax, theme),
                 ],
                 const SizedBox(height: 12),
-                const Divider(thickness: 2),
+                Divider(thickness: 2, color: theme.dividerColor),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'GRAND TOTAL',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: theme.textTheme.bodyLarge!.color,
                       ),
                     ),
                     Text(
@@ -146,7 +130,7 @@ class InlineSplitBillWidget extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                        color: theme.colorScheme.secondary,
                       ),
                     ),
                   ],
@@ -161,22 +145,19 @@ class InlineSplitBillWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Individual Amounts',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                    color: theme.textTheme.bodySmall!.color,
                   ),
                 ),
                 const SizedBox(height: 12),
                 ...splitBill.contributions.asMap().entries.map(
-                      (entry) => _buildUserRow(
-                        context,
-                        entry.value,
-                        entry.key,
-                      ),
-                    ),
+                  (entry) =>
+                      _buildUserRow(context, entry.value, entry.key, theme),
+                ),
               ],
             ),
           ),
@@ -185,22 +166,23 @@ class InlineSplitBillWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildRow(String label, String value) {
+  Widget _buildRow(String label, String value, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Colors.grey,
+            color: theme.textTheme.bodySmall!.color,
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
+            color: theme.textTheme.bodySmall!.color,
           ),
         ),
       ],
@@ -211,6 +193,7 @@ class InlineSplitBillWidget extends ConsumerWidget {
     BuildContext context,
     UserContribution contribution,
     int index,
+    ThemeData theme,
   ) {
     final colors = [
       Colors.blue,
@@ -228,10 +211,7 @@ class InlineSplitBillWidget extends ConsumerWidget {
       decoration: BoxDecoration(
         color: userColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: userColor.withOpacity(0.3),
-          width: 2,
-        ),
+        border: Border.all(color: userColor.withOpacity(0.3), width: 2),
       ),
       child: Row(
         children: [
@@ -239,11 +219,9 @@ class InlineSplitBillWidget extends ConsumerWidget {
             backgroundColor: userColor,
             radius: 20,
             child: Text(
-              contribution.items.first.userName
-                  .substring(0, 1)
-                  .toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
+              contribution.items.first.userName[0].toUpperCase(),
+              style: TextStyle(
+                color: theme.textTheme.bodyLarge!.color,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -256,7 +234,8 @@ class InlineSplitBillWidget extends ConsumerWidget {
               children: [
                 Text(
                   contribution.items.first.userName,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    color: theme.textTheme.bodyLarge!.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -265,25 +244,22 @@ class InlineSplitBillWidget extends ConsumerWidget {
                   '${contribution.itemCount} item${contribution.itemCount > 1 ? 's' : ''}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: theme.textTheme.bodySmall!.color,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: userColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               contribution.formattedTotal,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: theme.cardColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),

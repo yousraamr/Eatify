@@ -1,3 +1,4 @@
+import 'package:eatify/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 
@@ -22,7 +23,7 @@ class RoundTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: bgColor ?? Colors.white,
+          color: bgColor ?? AppTheme.card,
           borderRadius: BorderRadius.circular(25)),
       child: Row(
         children: [
@@ -45,7 +46,7 @@ class RoundTextfield extends StatelessWidget {
                 focusedBorder: InputBorder.none,
                 hintText: hintText,
                 hintStyle: TextStyle(
-                    color: Colors.black,
+                    color: AppTheme.textPrimary,
                     fontSize: 14,
                     fontWeight: FontWeight.w500),
               ),
@@ -81,7 +82,7 @@ class RoundTitleTextfield extends StatelessWidget {
     return Container(
       height: 55,
       decoration: BoxDecoration(
-          color: bgColor ?? Colors.white,
+          color: bgColor ?? AppTheme.card,
           borderRadius: BorderRadius.circular(25)),
       child: Row(
         children: [
@@ -111,7 +112,7 @@ class RoundTitleTextfield extends StatelessWidget {
                       focusedBorder: InputBorder.none,
                       hintText: hintText,
                       hintStyle: TextStyle(
-                          color: Colors.black,
+                          color: AppTheme.textPrimary,
                           fontSize: 14,
                           fontWeight: FontWeight.w500),
                     ),
@@ -123,7 +124,7 @@ class RoundTitleTextfield extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: Text(
                     title,
-                    style: TextStyle(color: Colors.black, fontSize: 11),
+                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 11),
                   ),
                 )
               ],

@@ -5,6 +5,7 @@ class SharedCartItem {
   final String menuItemName;
   final double price;
   final int quantity;
+  final String? imageUrl;
 
   SharedCartItem({
     required this.id,
@@ -13,6 +14,7 @@ class SharedCartItem {
     required this.menuItemName,
     required this.price,
     required this.quantity,
+    this.imageUrl,
   });
 
   factory SharedCartItem.fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class SharedCartItem {
       menuItemName: map['menu_items']['name'],
       price: (map['menu_items']['price'] as num).toDouble(),
       quantity: map['quantity'],
+      imageUrl: map['menu_items']['image_url'],
     );
   }
 

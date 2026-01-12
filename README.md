@@ -109,3 +109,15 @@ Supported languages:
 ```bash
 git clone https://github.com/yousraamr/Eatify.git
 cd Eatify
+```
+---
+
+## Contact Us
+
+Need help or have a question? Feel free to reach out to us!
+
+[![Yousra Amr](https://img.shields.io/badge/Yousra%20Amr-Contact-blue)](https://github.com/yousraamr)
+[![Mariam Jan](https://img.shields.io/badge/Mariam%20Jan-Contact-blue)](https://github.com/MariamJan)  
+[![Abdelrahman Mohamed](https://img.shields.io/badge/Abdelrahman%20Mohamed-Contact-blue)](https://github.com/iYaktina) 
+[![Sama Hegazy](https://img.shields.io/badge/Sama%20Hegazy-Contact-blue)](https://github.com/samahegazy22)  
+[![Rahma Wael](https://img.shields.io/badge/Rahma%20Wael-Contact-blue)](https://github.com/RahmaWael00)  
